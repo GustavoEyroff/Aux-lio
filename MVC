@@ -1,0 +1,8 @@
+mvc = model view cotroller
+
+modelo = responsavel por modelar as entidades do sistema e modelar os dados, por ex = conectar com a fot de dados, receber e tratalos
+visao = interface
+controlador(central)
+
+quando o usario entrar na url ele vai para a view, depois vai solicitar as info no controller, assim ele vai tratar as info, e vai buscar as info no model, o model retorna os dados e o controller
+dps de tratar os dados ele vao exibir na view
