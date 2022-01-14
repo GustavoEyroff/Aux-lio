@@ -1,0 +1,313 @@
+SOLID
+
+S= Single Responsibility Principle / Princípio da Responsabilidade Única
+ 
+ Uma classe deve ter um único objetivo ou uma unica ação para executar.
+
+ 	EX : public class Index ()
+		{
+			public function Load
+		}
+
+	   public class Index ()
+		{
+			public function showOrder
+		}
+
+          public class Index ()
+		{
+			public function calculateTtotal
+		}
+
+e não
+
+            public calss index()
+ 		{
+			public function calculateTotal
+			public function showOrder
+			public function Save
+		}
+
+
+
+
+O=Open-Closed Principle / Princípio Aberto-Fechado
+
+ Objetos ou entidades devem estar abertas a extensões mas fechadas para modificação. Separe o comportamento extensível por trás de uma interface e inverta as dependências.
+	Ex certo: interface Remuneravel
+{
+    public function remuneracao();
+}
+
+class ContratoClt implements Remuneravel
+{
+    public function remuneracao()
+    {
+        //...
+    }
+}
+
+class Estagio implements Remuneravel
+{
+    public function remuneracao()
+    {
+        //...
+    }
+}
+
+class FolhaDePagamento
+{
+    protected $saldo;
+    
+    public function calcular(Remuneravel $funcionario)
+    {
+        $this->saldo = $funcionario->remuneracao();
+    }
+}
+
+Ex errado:
+<?php
+
+class ContratoClt
+{
+    public function salario()
+    {
+        //...
+    }
+}
+
+class Estagio
+{
+    public function bolsaAuxilio()
+    {
+        //...
+    }
+}
+
+class FolhaDePagamento
+{
+    protected $saldo;
+    
+    public function calcular($funcionario)
+    {
+        if ( $funcionario instanceof ContratoClt ) {
+            $this->saldo = $funcionario->salario();
+        } else if ( $funcionario instanceof Estagio) {
+            $this->saldo = $funcionario->bolsaAuxilio();
+        }
+    }
+}
+
+
+
+
+L= Liskov Substitution Principle / Princípio da Substituição de Liskov
+
+ Uma classe derivada deve ser substituivel por sua classe base.
+ex: class A 
+{
+    public function getNome()
+    {
+        echo 'Meu nome é A';
+    }
+}
+
+class B extends A 
+{ 
+    public function getNome()
+    {
+        echo 'Meu nome é B';
+    }
+}
+
+$objeto1 = new A;
+$objeto2 = new B;
+
+function imprimeNome(A $objeto)
+{
+    return $objeto->getNome();
+}
+
+imprimeNome($objeto1); // Meu nome é A
+imprimeNome($objeto2); // Meu nome é B
+
+ex errado: # - Sobrescrevendo um método que não faz nada...
+class Voluntario extends ContratoDeTrabalho
+{
+    public function remuneracao()
+    {
+        // não faz nada
+    }
+}
+
+
+# - Lançando uma exceção inesperada...
+class MusicPlay
+{
+    public function play($file)
+    {
+        // toca a música   
+    }
+}
+
+class Mp3MusicPlay extends MusicPlay
+{
+    public function play($file)
+    {
+        if (pathinfo($file, PATHINFO_EXTENSION) !== 'mp3') {
+            throw new Exception;
+        }
+        
+        // toca a música
+    }
+}
+
+
+# - Retornando valores de tipos diferentes...
+class Auth
+{
+    public function checkCredentials($login, $password)
+    {
+        // faz alguma coisa
+        
+        return true;
+    }
+}
+
+class AuthApi extends Auth
+{
+    public function checkCredentials($login, $password)
+    {
+        // faz alguma coisa
+        
+        return ['auth' => true, 'status' => 200];
+    }
+}
+
+
+I= Interface Segregation Principle / Princípio da Segregação da Interface
+
+ Esse princípio basicamente diz que é melhor criar interfaces mais específicas ao invés de termos uma única interface genérica.
+
+ex: interface Aves
+{
+    public function setLocalizacao($longitude, $latitude);
+    public function renderizar();
+}
+
+interface AvesQueVoam extends Aves
+{
+    public function setAltitude($altitude);
+}
+
+class Papagaio implements AvesQueVoam
+{
+    public function setLocalizacao($longitude, $latitude)
+    {
+        //Faz alguma coisa
+    }
+    
+    public function setAltitude($altitude)
+    {
+        //Faz alguma coisa   
+    }
+    
+    public function renderizar()
+    {
+        //Faz alguma coisa
+    }
+}
+
+class Pinguim implements Aves
+{
+    public function setLocalizacao($longitude, $latitude)
+    {
+        //Faz alguma coisa
+    }
+    
+    public function renderizar()
+    {
+        //Faz alguma coisa
+    }
+}
+
+ex errado: interface Aves
+{
+    public function setLocalizacao($longitude, $latitude);
+    public function setAltitude($altitude);
+    public function renderizar();
+}
+
+class Papagaio implements Aves
+{
+    public function setLocalizacao($longitude, $latitude)
+    {
+        //Faz alguma coisa
+    }
+    
+    public function setAltitude($altitude)
+    {
+        //Faz alguma coisa   
+    }
+    
+    public function renderizar()
+    {
+        //Faz alguma coisa
+    }
+}
+
+class Pinguim implements Aves
+{
+    public function setLocalizacao($longitude, $latitude)
+    {
+        //Faz alguma coisa
+    }
+    
+    // A Interface Aves está forçando a Classe Pinguim a implementar esse método.
+    // Isso viola o príncipio ISP
+    public function setAltitude($altitude)
+    {
+        //Não faz nada...  Pinguins são aves que não voam!
+    }
+    
+    public function renderizar()
+    {
+        //Faz alguma coisa
+    }
+}
+
+D= Dependency Inversion Principle / Princípio da linversão d Dependência
+
+De acordo com Uncle Bob, esse princípio pode ser definido da seguinte forma:
+1. Módulos de alto nível não devem depender de módulos de baixo nível. Ambos devem depender da abstração.
+2. Abstrações não devem depender de detalhes. Detalhes devem depender de abstrações.
+No contexto da programação orientada a objetos, é comum que as pessoas confundam a Inversão de Dependência com a Injeção de Dependência, porém são coisas distintas, mas que relacionam entre si com um proposito em comum, deixar o código desacoplado.
+Importante: Inversão de Dependência não é igual a Injeção de Dependência, fique ciente disso! A Inversão de Dependência é um princípio (Conceito) e a Injeção de Dependência é um padrão de projeto (Design Pattern).
+
+ex: use MySQLConnection;
+
+class PasswordReminder
+{
+    private $dbConnection;
+    
+    public function __construct(MySQLConnection $dbConnection)
+    {       
+        $this->dbConnection = $dbConnection;           
+    }
+    
+    // Faz alguma coisa
+}
+
+ex errado:use MySQLConnection;
+
+class PasswordReminder
+{
+    private $dbConnection;
+    
+    public function __construct()
+    {       
+        $this->dbConnection = new MySQLConnection();           
+    }
+    
+    // Faz alguma coisa
+}
